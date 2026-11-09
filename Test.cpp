@@ -25,4 +25,6 @@ int main()
 	a.slice(0, 0, 2, 2).display();
 	cout << endl << "Matrix b:" << endl;
 	b.slice(0, 0, 2, 3).display();
+	a.reSize(5);
+	a.display();
 }
