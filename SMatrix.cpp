@@ -86,7 +86,7 @@ void SMatrix::reSize(int n)
 }
 
 // Slice the matrix and return a new SMatrix
-SMatrix SMatrix::slice(int rowstart, int colstart, int rowend, int colend) const
+SMatrix SMatrix::slice(int rowstart, int colstart, int rowend, int colend)
 {
     return SMatrix(m->slice(rowstart, colstart, rowend, colend));
 }
