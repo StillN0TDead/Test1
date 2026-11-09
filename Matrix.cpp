@@ -1,155 +1,191 @@
-
+#include "Matrix.h"
 #include <iostream>
-#include"Matrix.h"
 using namespace std;
 
+// Default constructor: empty 0x0 matrix
+Matrix::Matrix()
+{
+    rows = 0;
+    cols = 0;
+    data = nullptr;
+}
 
-    Matrix::Matrix() : data(nullptr), rows(0), columns(0) {}
-
-    Matrix::Matrix(int r, int c) : data(nullptr), rows(0), columns(0)
+// Parameterized constructor: r x c matrix filled with zeros
+// Invalid size (zero or negative) -> default empty 0x0 matrix
+Matrix::Matrix(int r, int c)
+{
+    if (r <= 0 || c <= 0)
     {
-        create(r, c);
+        rows = 0;
+        cols = 0;
+        data = nullptr;
+        return;
     }
 
-    Matrix::Matrix(const Matrix& other) : data(nullptr), rows(0), columns(0)
-    {
-        copyFrom(other);
-    }
+    rows = r;
+    cols = c;
+    data = new int* [rows];
 
-    Matrix& Matrix::operator=(const Matrix& other)
+    for (int i = 0; i < rows; i++)
     {
-        if (this != &other)
+        data[i] = new int[cols];
+        for (int j = 0; j < cols; j++)
+            data[i][j] = 0;
+    }
+}
+
+// Copy constructor: deep copy
+Matrix::Matrix(const Matrix& other)
+{
+    rows = other.rows;
+    cols = other.cols;
+    data = nullptr;
+
+    if (rows > 0 && cols > 0)
+    {
+        data = new int* [rows];
+        for (int i = 0; i < rows; i++)
         {
-            release();
-            copyFrom(other);
+            data[i] = new int[cols];
+            for (int j = 0; j < cols; j++)
+                data[i][j] = other.data[i][j];
         }
-        return *this;
     }
-
-    Matrix::~Matrix()
+    else
     {
-        release();    
+        rows = 0;
+        cols = 0;
     }
+}
 
-   
-    void Matrix::create(int r, int c)
+// Destructor
+Matrix::~Matrix()
+{
+    for (int i = 0; i < rows; i++)
+        delete[] data[i];
+    delete[] data;
+    data = nullptr;
+    rows = 0;
+    cols = 0;
+}
+
+// Element access (modifiable)
+// Invalid index -> returns a reference to a default value 0 (writes to it are discarded)
+int& Matrix::at(int r, int c)
+{
+    if (r < 0 || r >= rows || c < 0 || c >= cols)
     {
-        if (!validDimensions(r, c))
-        {
-            std::cout << "Invalid matrix size. Matrix not created.\n";
-            return;
-        }
-        release();
-        allocate(r, c);
+        static int dummy;
+        dummy = 0;
+        return dummy;
     }
+    return data[r][c];
+}
 
-   
-    void Matrix::freeMatrix() { release(); }
-
-   
-    int Matrix::getRows() const 
-    { 
-        return rows; 
-    }
-    int Matrix::getColumns() const 
-    { 
-        return columns; 
-    }
-    
-    int& Matrix::getSetElement(int r, int c)
-    {
-        static int dummy = 0;
-        if (!validIndex(r, c))
-        {
-            std::cout << "Matrix::getSetElement -> index out of range\n";
-            dummy = 0;
-            return dummy;
-        }
-        return data[r][c];
-    }
-    const int& Matrix::getSetElement(int r, int c) const
+// Element access (read-only)
+// Invalid index -> returns a reference to a dummy 0
+const int& Matrix::at(int r, int c) const
+{
+    if (r < 0 || r >= rows || c < 0 || c >= cols)
     {
         static const int dummy = 0;
-        if (!validIndex(r, c))
-        {
-            std::cout << "Matrix::getSetElement -> index out of range\n";
-            return dummy;
-        }
-        return data[r][c];
+        return dummy;
+    }
+    return data[r][c];
+}
+
+int Matrix::getRows() const
+{
+    return rows;
+}
+
+int Matrix::getColums() const
+{
+    return cols;
+}
+
+void Matrix::display() const
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+            cout << data[i][j] << "\t";
+        cout << endl;
+    }
+}
+
+Matrix Matrix::Transpose() const
+{
+    Matrix result(cols, rows);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            result.data[j][i] = data[i][j];
+    return result;
+}
+
+// Dimensions differ -> returns an empty 0x0 matrix
+Matrix Matrix::add(const Matrix& other) const
+{
+    if (rows != other.rows || cols != other.cols)
+    {
+        return Matrix();
     }
 
-    void Matrix::input()
+    Matrix result(rows, cols);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            result.data[i][j] = data[i][j] + other.data[i][j];
+    return result;
+}
+
+// cols != other.rows -> returns an empty 0x0 matrix
+Matrix Matrix::multiply(const Matrix& other) const
+{
+    if (cols != other.rows)
     {
-        if (data == nullptr)
-        {
-            std::cout << "Matrix is empty. Create it first.\n";
-            return;
-        }
-        for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-            {
-                std::cout << "[" << i << "][" << j << "]: ";
-                std::cin >> data[i][j];
-            }
+        return Matrix();
     }
 
-    void Matrix::display() const
-    {
-        std::cout << "Matrix Elements are:\n";
-        for (int i = 0; i < rows; i++)
+    Matrix result(rows, other.cols);
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < other.cols; j++)
         {
-            std::cout << i << ": ";
-            for (int j = 0; j < columns; j++)
-                std::cout << data[i][j] << '\t';
-            std::cout << '\n';
+            int sum = 0;
+            for (int k = 0; k < cols; k++)
+                sum += data[i][k] * other.data[k][j];
+            result.data[i][j] = sum;
+        }
+    return result;
+}
+
+// Resize: keeps overlapping elements, new cells are zero
+// Invalid size (zero or negative) -> matrix is left unchanged
+void Matrix::reSize(int newRows, int newCols)
+{
+    if (newRows <= 0 || newCols <= 0)
+    {
+        return;
+    }
+
+    int** newData = new int* [newRows];
+
+    for (int i = 0; i < newRows; i++)
+    {
+        newData[i] = new int[newCols];
+        for (int j = 0; j < newCols; j++)
+        {
+            if (i < rows && j < cols)
+                newData[i][j] = data[i][j];
+            else
+                newData[i][j] = 0;
         }
     }
 
-    
-    Matrix Matrix::add(const Matrix& other) const
-    {
-        Matrix result;
-        if (!canAdd(*this, other))
-        {
-            std::cout << "Addition not possible: sizes differ.\n";
-            return result;
-        }
-        result.allocate(rows, columns);
-        for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-                result.data[i][j] = data[i][j] + other.data[i][j];
-        return result;
-    }
+    for (int i = 0; i < rows; i++)
+        delete[] data[i];
+    delete[] data;
 
-    Matrix Matrix::multiply(const Matrix& other) const
-    {
-        Matrix result;
-        if (!canMultiply(*this, other))
-        {
-            std::cout << "Multiplication not possible: columns of first != rows of second.\n";
-            return result;
-        }
-        result.allocate(rows, other.columns);
-        for (int i = 0; i < rows; i++)
-            for (int j = 0; j < other.columns; j++)
-                for (int k = 0; k < columns; k++)
-                    result.data[i][j] += data[i][k] * other.data[k][j];
-        return result;
-    }
-
-    void Matrix::transpose()
-    {
-        if (data == nullptr) return;
-        int** nd = new int* [columns];
-        for (int j = 0; j < columns; j++)
-        {
-            nd[j] = new int[rows];
-            for (int i = 0; i < rows; i++)
-                nd[j][i] = data[i][j];
-        }
-        int newRows = columns, newCols = rows;
-        release();
-        data = nd;
-        rows = newRows;
-        columns = newCols;
-    }
+    data = newData;
+    rows = newRows;
+    cols = newCols;
+}

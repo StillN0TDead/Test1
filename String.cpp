@@ -107,7 +107,7 @@ bool String::isEmpty() const
 
 int String::getLength() const { return cstrLen(data); }
 int String::getSize() const { return size; }
-
+  
 void String::display() const
 {
     if (data != nullptr) std::cout << data;
