@@ -27,4 +27,5 @@ int main()
 	b.slice(0, 0, 2, 3).display();
 	a.reSize(5);
 	a.display();
+	b.Transpose().display();
 }
