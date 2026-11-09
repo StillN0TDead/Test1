@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -142,6 +142,7 @@
     <ClCompile Include="CMath.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="SMatrix.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="CMath.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="SMatix.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Time.h" />
   </ItemGroup>
