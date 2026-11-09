@@ -28,4 +28,5 @@ int main()
 	a.reSize(5);
 	a.display();
 	b.Transpose().display();
+	a.add(b).display();
 }
