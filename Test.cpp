@@ -22,7 +22,7 @@ int main()
 	cout << endl << "Matrix b:" << endl;
 	b.Transpose().display();
 	cout << endl << "Sliced Matrix a:" << endl;
-	a.slice(0, 0, 1, 2).display();
+	a.slice(0, 0, 2, 2).display();
 	cout << endl << "Matrix b:" << endl;
 	b.slice(0, 0, 2, 3).display();
 }
