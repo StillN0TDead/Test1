@@ -24,7 +24,7 @@ public:
     SMatrix add(const SMatrix&) const;
     SMatrix multiply(const SMatrix&) const;
     void reSize(int);
-	SMatrix slice(int, int, int, int) const;
+    SMatrix slice(int, int, int, int) const;
 	// many other functions
 };
 
