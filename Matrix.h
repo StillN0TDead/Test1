@@ -20,6 +20,7 @@ public:
     Matrix add(const Matrix&) const;
     Matrix multiply(const Matrix&) const;
     void reSize(int, int);
+	Matrix slice(int, int, int, int) const;
     // many other functions
 };
 

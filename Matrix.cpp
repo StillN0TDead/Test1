@@ -189,3 +189,16 @@ void Matrix::reSize(int newRows, int newCols)
     rows = newRows;
     cols = newCols;
 }
+
+Matrix Matrix::slice(int rowstart, int colstart, int rowend, int colend) const
+{
+	if (rowstart < 0 || colstart < 0 || rowend > rows || colend > cols || rowstart >= rowend || colstart >= colend)
+	{
+		return Matrix();
+	}
+	Matrix result(rowend - rowstart, colend - colstart);
+	for (int i = 0; i < result.getRows(); i++)
+		for (int j = 0; j < result.getColums(); j++)
+			result.data[i][j] = data[rowstart + i][colstart +  j];
+	return result;
+}   

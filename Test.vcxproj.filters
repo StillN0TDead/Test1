@@ -53,7 +53,7 @@
     <ClInclude Include="CMath.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="SMatix.h">
+    <ClInclude Include="SMatrix.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
