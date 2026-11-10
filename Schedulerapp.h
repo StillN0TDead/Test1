@@ -1,88 +1,104 @@
-#ifndef SCHEDULERAPP_H
-#define SCHEDULERAPP_H
-
 #include <iostream>
-#include <limits>
-#include "Scheduler.h"
+#include <ctime>
+#include"Scheduler.h"
+#include"Task.h"
+using namespace std;
 
 class SchedulerApp
 {
-    static void clearInput()
-    {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    // Reads a date; re-asks until it is valid.
-    // Date::setDate rejects bad values, so we compare what we get back.
-    static Date readDate()
-    {
-        int d, m, y;
-        while (true)
-        {
-            std::cout << "  Enter date (day month year): ";
-            if (!(std::cin >> d >> m >> y)) { clearInput(); continue; }
-            Date dt(d, m, y);
-            if (dt.getDay() == d && dt.getMonth() == m && dt.getYear() == y)
-                return dt;
-            std::cout << "  Invalid date, try again." << std::endl;
-        }
-    }
-
-    static Time readTime()
-    {
-        int h, m, s = 0;
-        while (true)
-        {
-            std::cout << "  Enter time (hour[0-23] minute): ";
-            if (!(std::cin >> h >> m)) { clearInput(); continue; }
-            Time t(h, m, s);
-            if (t.getHour() == h && t.getMinute() == m)
-                return t;
-            std::cout << "  Invalid time, try again." << std::endl;
-        }
-    }
-
-    static void addNewTask(Scheduler& sch)
-    {
-        Date d = readDate();
-        Time t = readTime();
-        clearInput();                       // discard leftover newline
-        std::cout << "  Enter task message: ";
-        String msg;
-        msg.input();
-        sch.addTask(Task(d, t, msg));
-        std::cout << "  Task saved." << std::endl;
-    }
-
 public:
+
     static void startApp()
     {
-        Scheduler sch;
-        int choice = -1;
+        Scheduler scheduler;
 
-        while (choice != 0)
+        int choice;
+
+        do
         {
-            std::cout << "\n===== SCHEDULER =====\n"
-                << "1. Add task\n"
-                << "2. Show today's tasks\n"
-                << "3. Show tasks of a date\n"
-                << "4. Show all tasks\n"
-                << "0. Exit\n"
-                << "Choice: ";
-            if (!(std::cin >> choice)) { clearInput(); choice = -1; continue; }
+            cout << "\n========== SCHEDULER ==========\n";
+            cout << "1. Add New Task\n";
+            cout << "2. Display Today's Tasks\n";
+            cout << "3. Display Tasks By Date\n";
+            cout << "4. Display All Tasks\n";
+            cout << "5. Exit\n";
+
+            cout << "\nEnter your choice: ";
+            cin >> choice;
 
             switch (choice)
             {
-            case 1: addNewTask(sch); break;
-            case 2: sch.displayTodaysTasks(); break;
-            case 3: sch.displayTask(readDate()); break;
-            case 4: sch.displayAllTasks(); break;
-            case 0: std::cout << "Goodbye!" << std::endl; break;
-            default: std::cout << "Invalid choice." << std::endl;
+            case 1:
+            {
+                int d, m, y;
+                int h, min, s;
+
+                cout << "\nEnter Task Date (DD MM YYYY): ";
+                cin >> d >> m >> y;
+
+                cout << "Enter Task Time (HH MM SS): ";
+                cin >> h >> min >> s;
+
+                Date date(d, m, y);
+                Time taskTime(h, min, s);
+
+                cin.ignore(10000, '\n');
+
+                char message[1000];
+
+                cout << "Enter Task Message: ";
+                cin.getline(message, 1000);
+
+                String taskMessage(message);
+
+                Task newTask(date, taskTime, taskMessage);
+
+                scheduler.addTask(newTask);
+
+                cout << "\nTask added successfully!\n";
+
+                break;
             }
-        }
+
+            case 2:
+            {
+                scheduler.displayTodaysTasks();
+                break;
+            }
+
+            case 3:
+            {
+                int d, m, y;
+
+                cout << "\nEnter Date (DD MM YYYY): ";
+                cin >> d >> m >> y;
+
+                Date date(d, m, y);
+
+                scheduler.displayTask(date);
+
+                break;
+            }
+
+            case 4:
+            {
+                scheduler.displayAllTasks();
+                break;
+            }
+
+            case 5:
+            {
+                cout << "\nExiting Scheduler...\n";
+                break;
+            }
+
+            default:
+            {
+                cout << "\nInvalid choice! Try again.\n";
+            }
+
+            }
+
+        } while (choice != 5);
     }
 };
-
-#endif
